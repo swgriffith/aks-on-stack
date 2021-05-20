@@ -72,3 +72,80 @@ The Azure documentation is very thorough in providing the steps needed to instal
 
 ## Time to deploy the cluster!
 
+The first thing you'll need, now that you have AKS Engine installed on a jump box, is an AKS Engine Cluster Specification (aka. API Model). The cluster specification is a file that we use to tell AKS engine how we want the cluster to be configured, including key options like the following:
+
+* Kubernetes Version
+* Cluster OS
+* Control Plane Node Count
+* Worker Node Count
+* Network Plugin
+* Network Policy
+
+>**_IMPORTANT:_** The cluster specification is initially used for creating the cluster, but a new cluster specification file is created for you as an output of the cluster creation process. THIS is the file you should use for future cluster operations, like upgrade and scale operations.
+
+The Azure Stack team maintains an example cluster specification in the AKS Engine Git Repo. Make sure you select the appropriate branch for your version of AKS Engine, and then go to 'examples/azure-stack'.
+
+* [AKS Engine on ASH Deployment Guide](https://docs.microsoft.com/en-us/azure-stack/user/azure-stack-kubernetes-aks-engine-deploy-cluster?view=azs-2008)
+* [AKS Engine v0.60.1 on ASH Sample Cluster Specification](https://github.com/Azure/aks-engine/blob/patch-release-v0.60.1/examples/azure-stack/kubernetes-azurestack.json)
+
+Once you've downloaded your relevant cluster specification file, continue following the above referenced AKS on ASH deployment guide to update the file with relevant parameters, which includes the following:
+
+* ASH Portal Fully Qualified Domain Name
+* Cluster Version and Size Details
+* Master and Worker Vnet/Subnet Resource IDs
+* Master First Consecutive IP
+* Service Principal ID and Secret
+  
+```bash
+# Load some environment variables to be used in the deployment
+RG=<Target Resource Group Name>
+LOC=<Azure Stack Hub Target Instance>
+CLIENT_ID=<Service Principal Client ID>
+CLIENT_SECRET=<Service Principal Client Secret>
+SUB_ID=<Subscription ID>
+
+# Deploy the cluster
+# Note that I use the resource group name
+# for the output directory. 
+aks-engine deploy \
+--azure-env AzureStackCloud \
+--location $LOC \
+--resource-group $RG \
+--api-model ./kubernetes-azurestack.json \
+--output-directory $RG \
+--client-id $CLIENT_ID \
+--client-secret $CLIENT_SECRET \
+--subscription-id $SUB_ID
+```
+
+The above deploy command will create an output directory containing the following:
+
+* **_apimodel.json_** - This API model represents the current state of the cluster and should be used for all future operations against the cluster
+* **_azuredeploy.json_** - This is an Azure Resource Manager template used to create the Azure resources
+* **_azuredeploy.parameters.json_** - Parameters file for the above noted Azure deployment template
+* **_kubeconfig directory_** - This directory holds your Kubernetes config file which can be used to access the cluster via [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)
+* Various certificate files that were created as part of the cluster creation process
+
+To access your cluster:
+
+1. Install [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)
+2. Tell kubectl where your config file is:
+  
+   * Option 1: Copy the kubeconfig json document to ~/.kube/config (the default location for Kubernetes config files)
+        ```bash
+        cp <aks engine output directory>/kubeconfig/<configfilename>.json ~/.kube/config
+        ```
+   * Option 2: Use the KUBECONFIG environment variable to tell kubectl where the file is
+        ```bash
+        export KUBECONFIG=<aks engine output directory>/kubeconfig/<configfilename>.json
+        ```
+   * Option 3: Merge your new file into an existing config file, although I've found this to be a bit inconsistent
+        ```bash
+        # Add all of the config files to the KUBECONFIG path
+        export KUBECONFIG=~/<path to config file 1>/<filename>.json:~/<path to config file 2>/<filename>.json
+        # Use the config view tool with the flatten option to merge and output to a single file
+        kubectl config view --merge --flatten > ~/.kube/config
+        # Now we reset the KUBECONFIG environment variable to the default path
+        export KUBECONFIG=~/.kube/config
+        ```
+        >Note: The above approach may not work if one config file is yaml and the other is json.
