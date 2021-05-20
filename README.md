@@ -437,7 +437,8 @@ NAME                     REFERENCE                       TARGETS    MINPODS   MA
 service-tracker-ui-hpa   Deployment/service-tracker-ui   122%/50%   3         10        10         10m
 ```
 ### Cluster Scaling
-As for cluster scaling, fortunately, AKS Engine provides an ```aks-engine scale``` command for scaling operations. To run the scale command you just need to provide the following values:
+As for cluster scaling, unfortunately, Azure Stack Hub doesn't support Virtual Machine Scale Sets, which are used by the cluster autoscaler. Any nodepool scaling operations will need to be done manually, or through a custom scripting approach.
+AKS Engine provides an ```aks-engine scale``` command for scaling operations. To run the scale command you just need to provide the following values:
 
 * **azure-env:** AzureStackCloud
 * **location:** The location id of your instance
