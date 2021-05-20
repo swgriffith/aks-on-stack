@@ -398,3 +398,29 @@ aks-engine scale \
 --node-pool linuxpool \
 --apiserver "cni-aks-ash.3173r03a.cloudapp.azcatcpec.com"
 ```
+---
+## Enable Cluster Autoscaling
+While manual scaling is useful at times, you likely will want to autoscale the cluster. Autoscaling works by watching for pods that can't be scheduled due to resource limitations. Those pods will remain in a pending state until a node is available to schedule.
+
+We enable cluster autoscaler by applying the 'Cluster Autoscaler' add-on to the cluster via the generated apimodel.json. There are a number of parameters you can modify via the 'config' block. See the detailed documentation [here](https://github.com/Azure/aks-engine/blob/master/examples/addons/cluster-autoscaler/README.md) for all of the options.
+
+```json
+"addons": [
+    {
+        "name": "cluster-autoscaler",
+        "enabled": true,
+        "pools": [
+            {
+            "name": "linuxpool",
+            "config": {
+                "min-nodes": "2",
+                "max-nodes": "5"
+            }
+            }
+        ],
+        "config": {
+            "scan-interval": "1m"
+        }
+    }
+    ...
+```
