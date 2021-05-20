@@ -169,6 +169,32 @@ To access your cluster:
     k8s-master-70281987-2      Ready    master   18h   v1.17.17
    ```
 
+1. Install a sample application
+
+```bash
+# Clone this repository
+git clone https://github.com/swgriffith/aks-on-stack.git
+cd aks-on-stack
+
+# Deploy the namespace and application components
+kubectl apply -f sample-app/namespace.yaml
+kubectl apply -f sample-app/mongodb.yaml
+kubectl apply -f sample-app/data-api.yaml
+kubectl apply -f sample-app/flights-api.yaml
+kubectl apply -f sample-app/quakes-api.yaml
+kubectl apply -f sample-app/weather-api.yaml
+kubectl apply -f sample-app/service-tracker-ui.yaml
+
+# Watch the services and pods come online
+watch kubectl get svc,pods -o wide -n service-tracker
+
+# Once the 'EXTERNAL-IP' field is populated for the service-tracker-ui
+# copy the IP and open your browser to http://<EXTERNAL-IP>:8080
+# Click the 'Refresh Data' links to load the dashboard
+```
+<img src="./images/service-tracker-ui.png" alt="Service Tracker UI" width="800"/>
+
+
 ---
 
 ## Enable Monitoring
@@ -340,3 +366,35 @@ prometheus-operator     ClusterIP      None           <none>          8443/TCP  
 You should now be able to navigate around the grafana installed dashboards for Kubernetes and should see live data.
 
 <img src="./images/prometheus.png" alt="Prometheus Grafana Dashboard" width="800"/>
+
+--- 
+
+## Cluster Scaling
+
+When running your cluster you may have a need to scale out, or scale back in, the number of nodes in your nodepool. Fortunately, AKS Engine provides an ```aks-engine scale``` command for scaling operations. To run the scale command you just need to provide the following values:
+
+* **azure-env:** AzureStackCloud
+* **location:** The location id of your instance
+* **resource-group:** The resource group name where your cluster is deployed
+* **api-model:** This is the path to the apimodel file that was created as an output of your cluster create (**Note:** dont mix this up with the file you created as an input to your cluster creation or the command will fail)
+* **client-id:** The client ID you use for cluster operations
+* **client-secret:** The secret for the client ID use for cluster operations
+* **subscription-id:** ID for the subscription containing the cluster
+* **new-node-count:** Target number of nodes in the cluster nodepool
+* **node-pool:** Name of the nodepool you want to scale
+* **apiserver:** FQDN of the cluster API server, used to execute the drain and cordon commands when scaling the cluster
+
+ex.
+```bash
+aks-engine scale \
+--azure-env AzureStackCloud \
+--location 3173r03a \
+--resource-group griffith-cni-aks \
+--api-model ./griffith-cni-aks/apimodel.json \
+--client-id "<Insert Client ID>" \
+--client-secret "<Insert Client Secret" \
+--subscription-id "<Insert Subscription ID>" \
+--new-node-count 2 \
+--node-pool linuxpool \
+--apiserver "cni-aks-ash.3173r03a.cloudapp.azcatcpec.com"
+```
