@@ -20,7 +20,7 @@ metadata:
   name: flights-api
   namespace: service-tracker
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: flights-api
