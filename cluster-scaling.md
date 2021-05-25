@@ -31,4 +31,5 @@ aks-engine scale \
 
 ---
 
+* [Back to Scaling](./scaling.md)
 * [Table of Contents](./README.md)
