@@ -65,3 +65,7 @@ The Azure documentation is very thorough in providing the steps needed to instal
     More details available [here](https://docs.microsoft.com/en-us/azure/aks/concepts-network)
 
 Next: [Deploy the Cluster](./deploy-cluster.md) 
+
+---
+
+[Table of Contents](./README.md)
