@@ -64,5 +64,5 @@ service-tracker-ui-hpa   Deployment/service-tracker-ui   122%/50%   3         10
 
 ---
 
-[Back to Scaling](./scaling.md)
-[Table of Contents](./README.md)
+* [Back to Scaling](./scaling.md)
+* [Table of Contents](./README.md)

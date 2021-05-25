@@ -306,5 +306,5 @@ As you'll see, the nodes are cordoned, drained and rebooted one by one, so there
 After the reboot is complete, if you check a node for the existence of ```/var/run/reboot-required``` you'll see that the file is now gone.
 
 ---
-[Back to Upgrade Overview](./upgrade-overview.md)
-[Table of Contents](./README.md)
+* [Back to Upgrade Overview](./upgrade-overview.md)
+* [Table of Contents](./README.md)

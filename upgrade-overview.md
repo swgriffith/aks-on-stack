@@ -63,4 +63,4 @@ Kured is a daemonset that runs in your cluster that allows you to configure how 
 NEXT: [Upgrade Walkthrough](./upgrade-walkthrough.md)
 
 ---
-[Table of Contents](./README.md)
+* [Table of Contents](./README.md)

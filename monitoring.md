@@ -10,4 +10,4 @@ Alternatively, or in addition to Container Insights, you can run a logging solut
 
 ---
 
-[Table of Contents](./README.md)
+* [Table of Contents](./README.md)

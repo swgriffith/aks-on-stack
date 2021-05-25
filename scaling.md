@@ -6,4 +6,4 @@ When running your cluster you may have a need to scale out, or scale back in, th
 * [Cluster Scaling](./cluster-scaling.md)
 
 ---
-[Table of Contents](./README.md)
+* [Table of Contents](./README.md)

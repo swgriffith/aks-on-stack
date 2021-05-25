@@ -88,5 +88,5 @@ You should now be able to navigate around the grafana installed dashboards for K
 
 ---
 
-[Back to Monitoring](./monitoring.md)
-[Table of Contents](./README.md)
+* [Back to Monitoring](./monitoring.md)
+* [Table of Contents](./README.md)

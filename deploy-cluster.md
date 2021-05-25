@@ -124,4 +124,4 @@ watch kubectl get svc,pods -o wide -n service-tracker
 
 ---
 
-[Table of Contents](./README.md)
+* [Table of Contents](./README.md)

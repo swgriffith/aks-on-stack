@@ -68,4 +68,4 @@ Next: [Deploy the Cluster](./deploy-cluster.md)
 
 ---
 
-[Table of Contents](./README.md)
+* [Table of Contents](./README.md)
