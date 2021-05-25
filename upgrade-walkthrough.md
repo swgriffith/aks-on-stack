@@ -160,6 +160,18 @@ The upgrade will take a while, as each node is individually upgraded. Keep an ey
 
 You should also see your application pods coming off and online, but since our deployment as two replicas of each application component, with the exception of MongoDB, there shouldn't be any service interuption until the stateful workloads transition. This is why it's so important to consider the persistence layer of your application, and either move out of cluster, or to a solution in cluster that will manage your trasnsition during upgrades (ex. The [MongoDB Operator](https://docs.mongodb.com/kubernetes-operator/master/)
 
+<img src="./images/kube-upgrade.png" alt="Kubernetes Version Upgrade" width="800"/>
+
+Also, as you can see below, in the load test run during the upgrade, out of 1 million requests, we had 39 failed due to timeout. This, as mentioned above, was almost certainly when our single MongoDB pod was moved.
+
+```bash
+Status code distribution:
+  [200] 1000000 responses
+
+Error distribution:
+  [39]  Get "http://172.23.112.57:8080/#/weather": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+```
+
 --- 
 
 ## Upgrade AKS Engine
@@ -181,22 +193,114 @@ GitTreeState: clean
 ```
 
 ---
-## Upgrade Node OS
+## Upgrade Node OS to Lastest 16.04 Base Image
 
-Looking at the [release motes]() for AKS Engine v0.60.1, we can see that the has been an OS Image update. Let's upgrade our cluster to that updated image.
+Looking at the [release motes](https://docs.microsoft.com/en-us/azure-stack/user/kubernetes-aks-engine-release-notes?view=azs-2102#aks-engine-and-corresponding-image-mapping) for AKS Engine v0.60.1, we can see that the has been an OS Image update (Ubuntu 16.04 2020.09.14 to Ubuntu 16.04 2021.01.28). Let's upgrade our cluster to that updated image.
 
-```bash
-
-```
-
-
-
-Next we need to have a look at our api model to see if there were any breaking changes. We could dig through the release notes for this, but the Azure Stack Hub team creates example apimodel files for all of their supported releases, so we can just look [here](https://github.com/Azure/aks-engine/tree/patch-release-v0.60.1/examples/azure-stack) to see any changes in v0.60.1, and compare against our existing file. After comparing, we can see that there was a minor change associated to issue [#4038](https://github.com/Azure/aks-engine/pull/4038), so let's pull the latest and update with our values.
+If you're only upgrading the OS image, you can run the exact same command we ran to upgrade our Kubernetes version, but include the --force flag.
 
 ```bash
-# Download the file locally
-wget https://raw.githubusercontent.com/Azure/aks-engine/patch-release-v0.60.1/examples/azure-stack/kubernetes-azurestack.json
-
-# Edit to update with your location, portal URL, cluster dns name, ssh key and client credentials
-nano kubernetes-azurestack.json
+# Upgrade your Cluster OS Version
+aks-engine upgrade \
+--azure-env AzureStackCloud \
+--location <Insert Location ID> \
+--resource-group <Insert Target Resource Group> \
+--api-model <Insert Path to generated apimodel.json file> \
+--client-id "<Insert Client ID>" \
+--client-secret "<Insert Client Secret>" \
+--subscription-id "<Insert Target Subscription ID>" \
+--upgrade-version 1.16.14 \
+--force
 ```
+
+Just like above, we can watch the status of the upgrade as follows via ```watch kubectl get nodes,pods -n service-tracker -o wide```. We'll see the nodes iterate through an upgrade, one by one, and if the application is running in a deployment with replica sets, we should only see a subset of the active pods in a deployment impacted at any given time, so there shouldn't be any downtime.
+
+---
+## Upgrade to New OS Major Version
+
+Over time new versions of the base OS will be available. Thus far our cluster has been running on Ubuntu 16.04, but 18.04 is available per the [ASH Release Notes](https://docs.microsoft.com/en-us/azure-stack/user/kubernetes-aks-engine-release-notes?view=azs-2102#aks-engine-and-corresponding-image-mapping). To upgrade the OS version, we simply need to set that OS version in the apimodel.json file, and again run the upgrade command from above with the '--force' flag.
+
+```bash
+# Edit the apimodel.json to set the image version from 16.04 to 18.04
+# You should update for both the 'masterProfile' and the 'agentpoolProfile'
+nano <output directory>/apimodel.json
+
+# Check the edits where made
+cat griffith-engine-upgrade/apimodel.json |grep distro
+
+      "distro": "aks-ubuntu-18.04",
+        "distro": "aks-ubuntu-18.04",
+
+# Run the upgrade command
+aks-engine upgrade \
+--azure-env AzureStackCloud \
+--location <Insert Location ID> \
+--resource-group <Insert Target Resource Group> \
+--api-model <Insert Path to generated apimodel.json file> \
+--client-id "<Insert Client ID>" \
+--client-secret "<Insert Client Secret>" \
+--subscription-id "<Insert Target Subscription ID>" \
+--upgrade-version 1.16.14 \
+--force
+```
+
+---
+
+## OS Patching and Reboot with Kured
+
+AKS nodes are pre-configured with [Unattended Upgrades](https://wiki.debian.org/UnattendedUpgrades), so any patches that need to be applied will be done so automatically. However, many patches require a reboot. A required reboot is signaled by the file ```/var/run/reboot-required```. 
+
+```bash
+cat /var/run/reboot-required
+
+*** System restart required ***
+```
+
+You can watch for this file yourself and reboot manually, draining and cordoning each node, or you can use the **KU**bernetes **RE**boot **D**aemon (aka. [Kured](https://github.com/weaveworks/kured)). You can review all of the Kured config options on the Kured site. This includes [setting a schedule](https://github.com/weaveworks/kured#setting-a-schedule) and setting up [notifications](https://github.com/weaveworks/kured#notifications), but for this walkthrough we'll just do a vanilla installation.
+
+> **_NOTE:_** I've found that the latest version of the kured yaml file is missing the 'args:' section under the 'command:' block. args is where you set any custom configs like ```--period```. You will need to add this back in to look like the following:
+
+```yaml
+    command:
+    - /usr/bin/kured
+    args:
+    - --period=1m
+```
+
+Lets pull down the latest, edit and apply.
+
+```bash
+latest=$(curl -s https://api.github.com/repos/weaveworks/kured/releases | jq -r .[0].tag_name)
+wget "https://github.com/weaveworks/kured/releases/download/$latest/kured-$latest-dockerhub.yaml"
+
+# Optionally edit the config. I'm going to set the period to every 1 minute for demo only.
+nano kured-$latest-dockerhub.yaml
+
+# Check the deployment
+ kubectl get pods -n kube-system -o wide |grep kured
+
+kured-kh9fv                                     1/1     Running   0          65s     10.100.6.46    k8s-linuxpool-70281987-0   <none>           <none>
+kured-wrgm2                                     1/1     Running   0          65s     10.100.6.82    k8s-linuxpool-70281987-1   <none>           <none>
+```
+
+You can watch the logs with the following command:
+
+```bash
+kubectl logs -l name=kured -n kube-system -f
+...
+time="2021-05-25T16:26:23Z" level=info msg="Reboot required"
+time="2021-05-25T16:26:23Z" level=warning msg="Lock already held: k8s-linuxpool-70281987-0"
+```
+
+You may run into some errors for pods that cannot be deleted, and will need to decide if you should update the pod disruption budget, or implement ```--force-reboot=true```.
+
+```bash
+evicting pod monitoring/alertmanager-main-0
+error when evicting pods/"alertmanager-main-0" -n "monitoring" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+```
+
+As you'll see, the nodes are cordoned, drained and rebooted one by one, so there should be minimal impact to an application designed to be distributed across the cluster.
+
+<img src="./images/kured.png" alt="Kured" width="800"/>
+
+After the reboot is complete, if you check a node for the existence of ```/var/run/reboot-required``` you'll see that the file is now gone.
