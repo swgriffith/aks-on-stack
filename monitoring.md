@@ -6,3 +6,8 @@ Alternatively, or in addition to Container Insights, you can run a logging solut
 
 * [Container Insights](./container-insights.md)
 * [Kube-Prometheus](./prometheus.md)
+
+
+---
+
+[Table of Contents](./README.md)

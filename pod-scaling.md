@@ -61,3 +61,8 @@ kubectl get hpa -n service-tracker
 NAME                     REFERENCE                       TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
 service-tracker-ui-hpa   Deployment/service-tracker-ui   122%/50%   3         10        10         10m
 ```
+
+---
+
+[Back to Scaling](./scaling.md)
+[Table of Contents](./README.md)

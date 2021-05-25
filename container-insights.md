@@ -74,3 +74,8 @@ To access Container Insights for your cluster in the Public Azure portal:
 You should now be able to explore your cluster in Container Insights!
 
 <img src="./images/az-mon-dash.png" alt="Container Insights Dashboard" width="800"/>
+
+---
+
+[Back to Monitoring](./monitoring.md)
+[Table of Contents](./README.md)

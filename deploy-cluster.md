@@ -122,3 +122,6 @@ watch kubectl get svc,pods -o wide -n service-tracker
 ```
 <img src="./images/service-tracker-ui.png" alt="Service Tracker UI" width="800"/>
 
+---
+
+[Table of Contents](./README.md)

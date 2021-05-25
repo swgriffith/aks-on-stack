@@ -61,3 +61,6 @@ As you can imagine after reading the manual process above, it's a heavily manual
 Kured is a daemonset that runs in your cluster that allows you to configure how and when you want reboots to take place. You can set it up to reboot on a schedule, or you can tell it to reboot when it notices that an Unattended Upgrade has occured that requires a reboot. 
 
 NEXT: [Upgrade Walkthrough](./upgrade-walkthrough.md)
+
+---
+[Table of Contents](./README.md)

@@ -4,3 +4,6 @@ When running your cluster you may have a need to scale out, or scale back in, th
 
 * [Pod Scaling](./pod-scaling.md)
 * [Cluster Scaling](./cluster-scaling.md)
+
+---
+[Table of Contents](./README.md)

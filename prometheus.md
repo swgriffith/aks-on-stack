@@ -86,4 +86,7 @@ You should now be able to navigate around the grafana installed dashboards for K
 
 <img src="./images/prometheus.png" alt="Prometheus Grafana Dashboard" width="800"/>
 
---- 
+---
+
+[Back to Monitoring](./monitoring.md)
+[Table of Contents](./README.md)
