@@ -158,7 +158,7 @@ aks-engine upgrade \
 
 The upgrade will take a while, as each node is individually upgraded. Keep an eye on the 'watch' running in terminal 1, and you'll start to see nodes moved to 'Not Ready' state and then the node Kubernetes version will switch over to 1.16.14 and the node will be in 'Ready' state again. If you watch the output of aks-engine, you'll see your node count increased by 1 each time a node is upgraded. AKS Engine will add a node to the cluster, get it online, and then remove the old node.
 
-You should also see your application pods coming off and online, but since our deployment as two replicas of each application component, with the exception of MongoDB, there shouldn't be any service interuption until the stateful workloads transition. This is why it's so important to consider the persistence layer of your application, and either move out of cluster, or to a solution in cluster that will manage your trasnsition during upgrades (ex. The [MongoDB Operator](https://docs.mongodb.com/kubernetes-operator/master/)
+You should also see your application pods coming off and online, but since our deployment as two replicas of each application component, with the exception of MongoDB, there shouldn't be any service interuption until the stateful workloads transition. This is why it's so important to consider the persistence layer of your application, and either move out of cluster, or to a solution in cluster that will manage your trasnsition during upgrades (ex. The [MongoDB Operator](https://docs.mongodb.com/kubernetes-operator/master/))
 
 <img src="./images/kube-upgrade.png" alt="Kubernetes Version Upgrade" width="800"/>
 
@@ -292,7 +292,7 @@ time="2021-05-25T16:26:23Z" level=info msg="Reboot required"
 time="2021-05-25T16:26:23Z" level=warning msg="Lock already held: k8s-linuxpool-70281987-0"
 ```
 
-You may run into some errors for pods that cannot be deleted, and will need to decide if you should update the pod disruption budget, or implement ```--force-reboot=true```.
+You may run into some errors for pods that cannot be deleted, and will need to decide if you should update the [pod disruption budget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/), or implement ```--force-reboot=true```.
 
 ```bash
 evicting pod monitoring/alertmanager-main-0

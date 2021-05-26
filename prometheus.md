@@ -7,7 +7,7 @@ The first thing you'll need to do is clone the kube-prometheus repository.
 git clone https://github.com/prometheus-operator/kube-prometheus
 ```
 Next, you'll install the CRDs, namespace and the prometheus operator. 
->Note: At this point you may choose to make some changes to things like the namespace. The best practices from the kube-prometheus project is to use their jssonet config generation approach. You can find the details [here](https://github.com/prometheus-operator/kube-prometheus#customizing-kube-prometheus)
+>Note: At this point you may choose to make some changes to things like the namespace. The best practices from the kube-prometheus project is to use their jsonnet config generation approach. You can find the details [here](https://github.com/prometheus-operator/kube-prometheus#customizing-kube-prometheus)
 
 ```bash
 cd kube-prometheus
@@ -51,7 +51,7 @@ kubectl create -f manifests/
 watch kubectl get svc,pods -n monitoring
 ```
 
-Once everything is running you can connect to the cluster by using a kubectl port-forward (ex. ```kubectl port-foward svc/grafana 3000:3000```), or if you didn't edit the file to set the type to LoadBalancer, you can just get the External-IP value and go right to your browser.
+Once everything is running you can connect to the cluster by using a kubectl port-forward (ex. ```kubectl port-foward svc/grafana 3000:3000```), or if you edited the file to set the type to LoadBalancer, you can just get the External-IP value and go right to your browser.
 
 ex. Port Forward
 ```bash

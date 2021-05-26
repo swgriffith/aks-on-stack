@@ -51,12 +51,12 @@ The above deploy command will create an output directory containing the followin
 * **_apimodel.json_** - This API model represents the current state of the cluster and should be used for all future operations against the cluster
 * **_azuredeploy.json_** - This is an Azure Resource Manager template used to create the Azure resources
 * **_azuredeploy.parameters.json_** - Parameters file for the above noted Azure deployment template
-* **_kubeconfig directory_** - This directory holds your Kubernetes config file which can be used to access the cluster via [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)
+* **_kubeconfig directory_** - This directory holds your Kubernetes config file which can be used to access the cluster via [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
 * Various certificate files that were created as part of the cluster creation process
 
 To access your cluster:
 
-1. Install [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)
+1. Install [kubectl](https://kubernetes.io/docs/tasks/tools/)
 1. Tell kubectl where your config file is:
   
    * Option 1: Copy the kubeconfig json document to ~/.kube/config (the default location for Kubernetes config files)
