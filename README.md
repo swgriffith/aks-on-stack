@@ -13,3 +13,4 @@ The purpose of this document is to provide a light weight guide to AKS on Azure 
   * [Cluster Scaling](./cluster-scaling.md)
 * [Upgrades](./upgrade-overview.md)
   * [Upgrade Walkthrough](./upgrade-walkthrough.md)
+* [Certificate Rotation](./cert-rotation.md)
