@@ -30,10 +30,7 @@ While AKS in Azure Public Cloud provides a mechanism for pushing these logs out 
 |ReplicaSet Desired vs Current Pods |Metrics that can be used to determine if the current state of Pods equals the desired state. Note, when cluster upgrades and nodes restarting are happening this might drop. This does not mean a bad thing as this is expected. The goal here is to be able to monitor this over a period of time and make sure the two states are not out of sync for an extended period.|Prometheus metrics: ```kube_deployment_spec_replicas kube_deployment_status_replicas ```|
 
 
+---
 
-
-
-
-
-
-
+* [Back to Monitoring](./monitoring.md)
+* [Table of Contents](./README.md)
