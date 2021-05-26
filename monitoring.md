@@ -6,6 +6,7 @@ Alternatively, or in addition to Container Insights, you can run a logging solut
 
 * [Container Insights](./container-insights.md)
 * [Kube-Prometheus](./prometheus.md)
+* [Monitoring Key Logs and Metrics](./monitoring-key-metrics.md)
 
 
 ---
